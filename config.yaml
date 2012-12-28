@@ -1,0 +1,16 @@
+flask:
+	port: 6020
+	debug: true
+
+foursquare:
+	clientid: 0
+	clientsecret: 0
+
+facebook: 0
+
+
+twitter: 0
+
+
+github: 0
+
