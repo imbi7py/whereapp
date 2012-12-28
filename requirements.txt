@@ -1,6 +1,7 @@
 Flask==0.9
 Jinja2==2.6
 Werkzeug==0.8.3
+foursquare==20120716
 pymongo==2.4.1
 requests==0.14.2
 requests-oauth==0.4.1
