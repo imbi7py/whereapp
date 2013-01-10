@@ -1,24 +1,27 @@
 from flask import Flask, render_template, Response, request
+
 import werkzeug.serving
+import foursquare
 import yaml
 
 yaml.safe_load('config.yml')
 
 
-
-
 app = Flask(__name__)
+app.config.from_object(__name__)
 
-foursqclient = foursquare.Foursquare(client_id=os.getenv("foursqclientid"),
-                               client_secret=os.getenv("foursqclientsecret"),
-                               redirect_uri="http://where.ranman.org/auth")
-
-auth_uri = client.oauth.auth_url()
+foursqclient = foursquare.Foursquare(client_id=0,
+                                     client_secret=0,
+                                     redirect_uri=0)
 
 
-@app.route('/callback')
-def callback_url():
-    request.args.get('code')
+@app.route('/oauth/foursquare/authorize')
+def foursquare_oauth():
+    access_token = foursqclient.oauth.get_token(request['code'])
+    # db store foursq access token
+    foursqclient.set_access_token(access_token)
+
+
 
 
 @app.route('/')
@@ -27,8 +30,7 @@ def main_page():
     return render_template('index.html', info=info)
 
 
-def get4sqcheckin():
-    pass
+
 
 
 @werkzeug.serving.run_with_reloader
