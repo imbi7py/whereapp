@@ -1,44 +1,41 @@
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, redirect
 
-import werkzeug.serving
 import foursquare
 import yaml
 
-yaml.safe_load('config.yml')
+_config = yaml.safe_load(file('config.yaml'))
 
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-foursqclient = foursquare.Foursquare(client_id=0,
-                                     client_secret=0,
-                                     redirect_uri=0)
+foursqclient = foursquare.Foursquare(
+                client_id=_config['foursquare']['client_id'],
+                client_secret=_config['foursquare']['client_secret'],
+                redirect_uri=_config['flask']['base_url'] +
+                             _config['foursquare']['redirect_uri'])
 
 
-@app.route('/oauth/foursquare/authorize')
+@app.route(_config['foursquare']['redirect_uri'])
 def foursquare_oauth():
-    access_token = foursqclient.oauth.get_token(request['code'])
+    access_token = foursqclient.oauth.get_token(request.args.get('code'))
+    print access_token
     # db store foursq access token
     foursqclient.set_access_token(access_token)
+    return redirect(_config['flask']['base_url'], 302)
 
 
+@app.route('/foursquare/auth')
+def foursquare_auth():
+    return redirect(foursqclient.oauth.auth_url(), 302)
 
 
 @app.route('/')
 def main_page():
-    info = {}
+    info = foursqclient.users()
     return render_template('index.html', info=info)
 
 
-
-
-
-@werkzeug.serving.run_with_reloader
-def run_dev_server():
-    app.debug = True
-    app.port = 6020
-    app.run()
-
-
 if __name__ == '__main__':
-    run_dev_server()
+    app.debug = _config['flask']['debug']
+    app.run()
