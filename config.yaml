@@ -1,10 +1,13 @@
 flask:
-	port: 6020
-	debug: true
+    port: 80
+    debug: true
+    host: where.ranman.org
+    base_url: http://where.ranman.org
 
 foursquare:
-	clientid: 0
-	clientsecret: 0
+    client_id: 0
+    client_secret: 0
+    redirect_uri: /oauth/foursquare/authorize
 
 facebook: 0
 
@@ -14,3 +17,5 @@ twitter: 0
 
 github: 0
 
+
+dropbox: 0
