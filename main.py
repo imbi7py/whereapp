@@ -14,7 +14,6 @@ _config = yaml.safe_load(file('config.yaml'))
 
 
 app = Flask(__name__)
-app.config.from_object(__name__)
 
 redirect_uri = _config['flask']['base_url'] + _config['foursquare']['redirect_uri']
 foursqclient = foursquare.Foursquare(
@@ -43,7 +42,6 @@ def dropbox_oath():
             dbox_session.request_token)
     dbox_session.set_token(access_token.key,
                            access_token.secret)
-    dbox_client = client.DropboxClient(dbox_session)
     return redirect(_config['flask']['base_url'], 302)
 
 @app.route(_config['foursquare']['redirect_uri'])
@@ -64,7 +62,10 @@ def foursquare_auth():
 @app.route('/')
 def main_page():
     checkin = foursqclient.users.checkins(params={'limit': 1})['checkins']['items'][0]
-    return render_template('index.html', checkin=checkin)
+    dbox_client = client.DropboxClient(dbox_session)
+    latest_photo = dbox_client.metadata('/.gitshots')['contents'][-1]
+    latest_photo = dbox_client.media(latest_photo['path'])['url']
+    return render_template('index.html', checkin=checkin, latest_photo=latest_photo)
 
 if __name__ == '__main__':
     app.debug = _config['flask']['debug']

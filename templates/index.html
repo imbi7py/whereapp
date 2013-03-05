@@ -13,22 +13,34 @@
     </script>
     <script type="text/javascript">
       function initialize() {
+        var myLatLng = new google.maps.LatLng({{ checkin.venue.location.lat }},
+                                              {{ checkin.venue.location.lng }});
         var mapOptions = {
-          center: new google.maps.LatLng({{ checkin.venue.location.lat }},
-                                         {{ checkin.venue.location.lng }}),
+          center: myLatLng,
           zoom: 16,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            animation: google.maps.Animation.DROP,
+            map: map,
+            title: "{{ checkin.venue.name }}"
+        });
       }
     </script>
   </head>
   <body onload="initialize()">
-    <h1>Randall is here: {{ checkin.venue.name }}</h1>
-    <h3>{{ checkin.venue.location.city }}</h3>
-    <h3>{{ checkin.venue.location.country }}</h3>
-    <h3>{{ checkin.shout }}</h3>
+    <div id="leftpanel" style="float:left; width: 45%">
+        <h1>Randall is here: {{ checkin.venue.name }}</h1>
+        <h3>{{ checkin.venue.location.city }}</h3>
+        <h3>{{ checkin.venue.location.country }}</h3>
+        <h3>{{ checkin.shout }}</h3>
+    </div>
+    <div id="rightpanel" style="float:right; width: 45%">
+        <img src="{{ latest_photo }}" width=300 >
+    </div>
     <div id="map_canvas" style="width:100%; height:100%"></div>
   </body>
 </html>
