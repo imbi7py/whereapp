@@ -64,12 +64,7 @@ def foursquare_auth():
 @app.route('/')
 def main_page():
     checkin = foursqclient.users.checkins(params={'limit': 1})['checkins']['items'][0]
-    venue_name = checkin['venue']['name']
-    shout = checkin.get('shout', None)
-    lat = checkin['venue']['location']['lat']
-    lng = checkin['venue']['location']['lng']
-    return render_template('index.html', info=venue_name)
-
+    return render_template('index.html', checkin=checkin)
 
 if __name__ == '__main__':
     app.debug = _config['flask']['debug']

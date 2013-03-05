@@ -1,3 +1,34 @@
-<!doctype html>
-<title>Where Is Randall?</title>
-<h1>Randall is here: {{ info }}</h1>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map_canvas { height: 300px }
+    </style>
+    <title>Where Is Randall?</title>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpwTjDMiFx3RJR21pmgQGzhI23hmhEa-c&sensor=false">
+    </script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          center: new google.maps.LatLng({{ checkin.venue.location.lat }},
+                                         {{ checkin.venue.location.lng }}),
+          zoom: 16,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("map_canvas"),
+            mapOptions);
+      }
+    </script>
+  </head>
+  <body onload="initialize()">
+    <h1>Randall is here: {{ checkin.venue.name }}</h1>
+    <h3>{{ checkin.venue.location.city }}</h3>
+    <h3>{{ checkin.venue.location.country }}</h3>
+    <h3>{{ checkin.shout }}</h3>
+    <div id="map_canvas" style="width:100%; height:100%"></div>
+  </body>
+</html>
