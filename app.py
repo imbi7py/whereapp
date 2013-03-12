@@ -4,8 +4,9 @@ import foursquare
 import yaml
 
 from dropbox import session, client
-
-_config = yaml.safe_load(file('config.yaml'))
+import os
+path = os.path.dirname(os.path.realpath(__file__))+'/config.yaml'
+_config = yaml.safe_load(file(path))
 
 
 app = Flask(__name__)
