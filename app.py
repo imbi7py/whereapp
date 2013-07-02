@@ -66,7 +66,7 @@ def main_page():
     checkin = foursqclient.users.checkins(params={'limit': 1})
     checkin = checkin['checkins']['items'][0]
     dbox_client = client.DropboxClient(dbox_session)
-    latest_photo = dbox_client.metadata('/.gitshots')['contents'][-1]
+    latest_photo = dbox_client.metadata('/.gitshots')['contents'][-2]
     latest_photo = dbox_client.media(latest_photo['path'])['url']
     return render_template('index.html',
                            checkin=checkin,
