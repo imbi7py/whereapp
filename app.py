@@ -1,22 +1,22 @@
-from flask import Flask, render_template, request, redirect
-
-import foursquare
-import yaml
-
-from dropbox import session, client
 import os
+
+import yaml
+import foursquare
+from flask import Flask, render_template, request, redirect, jsonify
+from dropbox import session, client
 path = os.path.dirname(os.path.realpath(__file__))+'/config.yaml'
-_config = yaml.safe_load(file(path))
+_config = yaml.safe_load(open(path))
 
 
 app = Flask(__name__)
 
-redirect_uri = (_config['flask']['base_url'] +
-               _config['foursquare']['redirect_uri'])
+redirect_uri = (
+    _config['flask']['base_url'] + _config['foursquare']['redirect_uri'])
 foursqclient = foursquare.Foursquare(
-                client_id=_config['foursquare']['client_id'],
-                client_secret=_config['foursquare']['client_secret'],
-                redirect_uri=redirect_uri)
+    client_id=_config['foursquare']['client_id'],
+    client_secret=_config['foursquare']['client_secret'],
+    redirect_uri=redirect_uri)
+
 # remove for prod
 foursqclient.set_access_token(_config['foursquare']['access_token'])
 
@@ -33,15 +33,14 @@ def dropbox_auth():
     redirect_uri = (_config['flask']['base_url'] +
                     _config['dropbox']['redirect_uri'])
     url = dbox_session.build_authorize_url(
-            dbox_session.obtain_request_token(),
-            oauth_callback=redirect_uri)
+        dbox_session.obtain_request_token(),
+        oauth_callback=redirect_uri)
     return redirect(url, 302)
 
 
 @app.route(_config['dropbox']['redirect_uri'])
 def dropbox_oath():
-    access_token = dbox_session.obtain_access_token(
-            dbox_session.request_token)
+    access_token = dbox_session.obtain_access_token(dbox_session.request_token)
     dbox_session.set_token(access_token.key,
                            access_token.secret)
     return redirect(_config['flask']['base_url'], 302)
@@ -59,6 +58,13 @@ def foursquare_oauth():
 def foursquare_auth():
     auth_uri = foursqclient.oauth.auth_url()
     return redirect(auth_uri, 302)
+
+
+@app.route('/current_location.json')
+def current_location():
+    checkin = foursqclient.users.checkins(
+        params={'limit': 1}).get('checkins').get('items')[0]
+    return jsonify(checkin)
 
 
 @app.route('/')
